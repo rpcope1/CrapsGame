@@ -125,10 +125,53 @@ class craps_game{
             bet = type;
             bet_amount = amount;
         }
+        void roll_point(unsigned point){
+            unsigned reroll = game_dice->roll_and_sum();
+            cout << "Re-rolled " << game_dice->get_nth_face(0) << "," << game_dice->get_nth_face(1) << " (" << reroll << ")" << endl;            
+            switch(bet){
+              case 'p':
+                if(reroll == point){
+                    cout << "Rolled point: WIN" << endl;
+                    cout << "Won $" << bet_amount << endl;
+                    p1->add_money(bet_amount);
+                }
+                else if(reroll == 7){
+                    cout << "Rolled 7: LOSE" << endl;
+                    cout << "Lost $" << bet_amount << endl;
+                    p1->remove_money(bet_amount);
+                }
+                else{
+                    roll_point(point);
+                }
+                break;
+              case 'd':
+                if(reroll == 7){
+                    cout << "Rolled 7: WIN" << endl;
+                    cout << "Won $" << bet_amount << endl;
+                    p1->add_money(bet_amount);
+                }
+                else if(reroll == point){
+                    cout << "Rolled point: LOSE" << endl;
+                    cout << "Lost $" << bet_amount << endl;
+                    p1->remove_money(bet_amount);
+                }
+                else if(reroll == 12){
+                    cout << "Rolled 12: LOSE" << endl;
+                    cout << "House wins." << endl;
+                    cout << "Lost $" << bet_amount << endl;
+                    p1->remove_money(bet_amount);
+                }
+                else{
+                    roll_point(point);
+                }
+                break;
+            }                
+        }        
         void roll(void){
             unsigned outcome = game_dice->roll_and_sum();
-            cout << "Rolled " << outcome << endl;
-            if(bet == 'p'){
+            cout << "Rolled " << game_dice->get_nth_face(0) << "," << game_dice->get_nth_face(1) << " (" << outcome << ")" << endl;
+            switch(bet){ 
+              case'p':
                 cout << "Bet Pass" << endl;
                 switch(outcome){                
                     case 7:
@@ -149,9 +192,9 @@ class craps_game{
                         cout << "Point set at: " << outcome << endl;
                         roll_point(outcome);
                         break;
-                }
-            }
-            else if(bet == 'd'){
+                }              
+                break;
+              case 'd':
                 cout << "Bet Don't Pass" << endl;
                 switch(outcome){                
                     case 2:
@@ -173,50 +216,40 @@ class craps_game{
                         roll_point(outcome);
                         break;
                 }
-
-            }
-        }
-        void roll_point(unsigned point){
-            if(bet == 'p'){
-                unsigned reroll = game_dice->roll_and_sum();
-                cout << "Re-rolled " << reroll << endl;
-                if(reroll == point){
-                    cout << "Rolled point: WIN" << endl;
-                    cout << "Won $" << bet_amount << endl;
-                    p1->add_money(bet_amount);
+                break;
+              case 'c':
+                cout << "Bet Craps" << endl;
+                switch(outcome){                
+                    case 2:
+                    case 3:
+                    case 12:
+                        cout << "Craps: WIN" << endl;
+                        cout << "Won $" << 8.0*bet_amount << endl;
+                        p1->add_money(8.0*bet_amount);
+                        break;
+                    default:
+                        cout << "Not Craps: LOSE" << endl;
+                        cout << "Lost $" << bet_amount << endl;
+                        p1->remove_money(bet_amount);
+                        break;
                 }
-                else if(reroll == 7){
-                    cout << "Rolled 7: LOSE" << endl;
-                    cout << "Lost $" << bet_amount << endl;
-                    p1->remove_money(bet_amount);
+                break;
+              case '7':
+                cout << "Bet Sevens" << endl;
+                switch(outcome){                
+                    case 7:                    
+                        cout << "Seven: WIN" << endl;
+                        cout << "Won $" << 5.0*bet_amount << endl;
+                        p1->add_money(5.0*bet_amount);
+                        break;
+                    default:
+                        cout << "Not Seven: LOSE" << endl;
+                        cout << "Lost $" << bet_amount << endl;
+                        p1->remove_money(bet_amount);
+                        break;
                 }
-                else{
-                    roll_point(point);
-                }
-            }
-            else if(bet == 'd'){
-                unsigned reroll = game_dice->roll_and_sum();
-                cout << "Re-rolled " << reroll << endl;
-                if(reroll == 7){
-                    cout << "Rolled 7: WIN" << endl;
-                    cout << "Won $" << bet_amount << endl;
-                    p1->add_money(bet_amount);
-                }
-                else if(reroll == point){
-                    cout << "Rolled point: LOSE" << endl;
-                    cout << "Lost $" << bet_amount << endl;
-                    p1->remove_money(bet_amount);
-                }
-                else if(reroll == 12){
-                    cout << "Rolled 12: LOSE" << endl;
-                    cout << "House wins." << endl;
-                    cout << "Lost $" << bet_amount << endl;
-                    p1->remove_money(bet_amount);
-                }
-                else{
-                    roll_point(point);
-                }
-            }
+                break;
+            }        
         }
 };
 
@@ -231,10 +264,11 @@ int main() {
        char play;    
        do{ 
             cout << "Set Bet: " << endl << "-[p] -> Pass (1:1)" << endl << "-[d] -> Don't Pass (1:1)" << endl;
+            cout << "-[c] -> Any Craps (2,3,12) (8:1)" << endl << "-[7] Any 7 (5:1)" << endl;
             cout << "Bet: ";
             cin >> bet;
             cin.clear();       
-       }while(bet != 'p' && bet != 'd');
+       }while(bet != 'p' && bet != 'd' && bet != '7' && bet != 'c');
        cout << "Set amount to bet: $";
        cin >> amount;
        cout << endl;
@@ -251,3 +285,4 @@ int main() {
     cout << "Final earnings $" << my_player.get_money() << endl;
 	return 0;
 }
+
