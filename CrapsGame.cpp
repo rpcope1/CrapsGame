@@ -25,7 +25,8 @@ bool isCharInString(char c, string s){
 }
 
 class die{
-		unsigned short face;
+    private:		
+        unsigned short face;
 	public:
 		unsigned short get_face(void){
 			return face;
@@ -39,6 +40,7 @@ class die{
 };
 
 class dice{
+    private:        
         unsigned number;
         die * the_dice;
     public:
@@ -90,17 +92,15 @@ class dice{
         }
 };
 
-
-//Two modes
-//First mode --> Game mode. Actually play craps.
-//Second mode --> Simulation mode. Place a generic bet, simulation over MANY games, look at odds.
-
 class player{
+    private:        
+        string name;
         float money;
         bool shooter;
     public:
         player(float money_init){
             money = money_init;
+            name = "Player";
         }
         void set_money(float m){
             money = m;
@@ -120,9 +120,16 @@ class player{
         bool get_shooter(void){       
             return shooter;
         }
+        void set_name(string n){
+            name = n;
+        }
+        string get_name(void){
+            return name;
+        }
 };     
 
 class craps_game{
+    private:
         dice * game_dice;
         char mode; unsigned point;
         char bet; float bet_amount;
@@ -310,6 +317,19 @@ class craps_game{
         }
 };
 
+void ListBets(void){
+    //Basic Pass Line Bets..
+    cout << "--Pass Line Bets--" << endl;
+    cout << "-[p] -> Pass (1:1)" << endl << "-[d] -> Don't Pass (1:1)" << endl;
+    //Propostion bets..
+    cout << "--Proposition Bets--" << endl;
+    cout << "-[c] -> Any Craps (2,3,12) (8:1)" << endl << "-[7] -> Any 7 (5:1)" << endl;
+    cout << "-[3] -> Ace-Duece (16:1)" << endl << "-[2] -> Aces (31:1)" << endl;
+    cout << "-[1] -> Twelve (31:1)" << endl;
+    
+    return;
+}
+
 int main() {
 	srand(time(NULL));
 	cout << "Craps Simulation v0.1" << endl;	
@@ -320,12 +340,7 @@ int main() {
        char bet; float amount;
        char play;    
        do{ 
-            cout << "--Pass Line Bets--" << endl;
-            cout << "-[p] -> Pass (1:1)" << endl << "-[d] -> Don't Pass (1:1)" << endl;
-            cout << "--Proposition Bets--" << endl;
-            cout << "-[c] -> Any Craps (2,3,12) (8:1)" << endl << "-[7] -> Any 7 (5:1)" << endl;
-            cout << "-[3] -> Ace-Duece (16:1)" << endl << "-[2] -> Aces (31:1)" << endl;
-            cout << "-[1] -> Twelve (31:1)" << endl;
+            ListBets();
             cout << "Bet: ";
             cin >> bet;
             cin.clear();       
