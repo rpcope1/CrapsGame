@@ -6,11 +6,23 @@
 // Description : Craps Simulation
 //============================================================================
 
+#define DEBUG false
+
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <climits>
 #include <vector>
+#include <string>
 using namespace std;
+
+bool isCharInString(char c, string s){
+    for(unsigned i = 0; i < s.length(); i++){
+        if(c == s[i]) return true;
+        if(DEBUG) cout << c << " " << s[i] << endl;
+    }
+    return false;
+}
 
 class die{
 		unsigned short face;
@@ -249,6 +261,51 @@ class craps_game{
                         break;
                 }
                 break;
+              case '3':
+                cout << "Bet Ace-Duece" << endl;
+                switch(outcome){
+                    case 3:
+                        cout << "Ace-Duece: WIN" << endl;
+                        cout << "Won $" << 16.0*bet_amount << endl;
+                        p1->add_money(16.0*bet_amount);
+                        break;
+                    default:
+                        cout << "Not Ace-Duece: LOSE" << endl;
+                        cout << "Lost $" << bet_amount << endl;
+                        p1->remove_money(bet_amount);
+                        break;
+                }
+                break;
+              case '2':
+                cout << "Bet Aces" << endl;
+                switch(outcome){
+                    case 2:
+                        cout << "Aces: WIN" << endl;
+                        cout << "Won $" << 31.0*bet_amount << endl;
+                        p1->add_money(31.0*bet_amount);
+                        break;
+                    default:
+                        cout << "Not Aces: LOSE" << endl;
+                        cout << "Lost $" << bet_amount << endl;
+                        p1->remove_money(bet_amount);
+                        break;
+                }
+                break;
+              case '1':
+                cout << "Bet Twelve" << endl;
+                switch(outcome){
+                    case 2:
+                        cout << "Twelve: WIN" << endl;
+                        cout << "Won $" << 31.0*bet_amount << endl;
+                        p1->add_money(31.0*bet_amount);
+                        break;
+                    default:
+                        cout << outcome << ": LOSE" << endl;
+                        cout << "Lost $" << bet_amount << endl;
+                        p1->remove_money(bet_amount);
+                        break;
+                }
+                break;
             }        
         }
 };
@@ -263,14 +320,31 @@ int main() {
        char bet; float amount;
        char play;    
        do{ 
-            cout << "Set Bet: " << endl << "-[p] -> Pass (1:1)" << endl << "-[d] -> Don't Pass (1:1)" << endl;
-            cout << "-[c] -> Any Craps (2,3,12) (8:1)" << endl << "-[7] Any 7 (5:1)" << endl;
+            cout << "--Pass Line Bets--" << endl;
+            cout << "-[p] -> Pass (1:1)" << endl << "-[d] -> Don't Pass (1:1)" << endl;
+            cout << "--Proposition Bets--" << endl;
+            cout << "-[c] -> Any Craps (2,3,12) (8:1)" << endl << "-[7] -> Any 7 (5:1)" << endl;
+            cout << "-[3] -> Ace-Duece (16:1)" << endl << "-[2] -> Aces (31:1)" << endl;
+            cout << "-[1] -> Twelve (31:1)" << endl;
             cout << "Bet: ";
             cin >> bet;
             cin.clear();       
-       }while(bet != 'p' && bet != 'd' && bet != '7' && bet != 'c');
-       cout << "Set amount to bet: $";
-       cin >> amount;
+       }while(!isCharInString(bet, "pdc7321"));
+       do{            
+            cout << "Set amount to bet: $";
+            cin >> amount;
+            if(cin.fail()){
+                cout << "Please enter a valid dollar value." << endl;
+                cin.clear(); cin.ignore(INT_MAX,'\n');
+            }
+            else if(amount > my_player.get_money()){
+                cout << "Insufficient cash to wager bet!" << endl;
+                cin.clear();
+            }
+            else{
+                break;
+            }
+       }while(true);
        cout << endl;
        cin.clear();
        game.set_bet(bet, amount);
